@@ -13,7 +13,6 @@ const dialogflowClient = new Dialogflow.SessionsClient({
   },
   projectId: process.env.PROJECT_ID
 });
-const sessionPath = dialogflowClient.projectAgentSessionPath(process.env.PROJECT_ID, 'discordbot');
 
 let lastResponce = new Date('2000');
 const responces = {
@@ -36,8 +35,9 @@ bot.on('message', async (message) => {
 
   if (text.length < 5) return;
 
+  const session = dialogflowClient.projectAgentSessionPath(process.env.PROJECT_ID, message.author.id);
   const dialogflowRequest = {
-    session: sessionPath,
+    session,
     queryInput: {
       text: {
         text,
