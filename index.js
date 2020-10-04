@@ -15,10 +15,6 @@ const dialogflowClient = new Dialogflow.SessionsClient({
 });
 
 let lastResponce = new Date('2000');
-const responces = {
-  "party": process.env.COMMAND_PARTY,
-  "registration": process.env.COMMAND_REGISTRATION
-}
 
 bot.on('ready', async () => {
   const channel = bot.channels.cache.get(process.env.CHANNEL_ID)
@@ -56,7 +52,7 @@ bot.on('message', async (message) => {
   if (trigger) {
     lastResponce = new Date();
     console.log(`[${message.author.tag}] ${message.cleanContent}`)
-    message.channel.send(`${responces[trigger]}\n${message.author}`)
+    message.channel.send(`${process.env[`COMMAND_${trigger.toUpperCase()}`]}\n${message.author}`)
     message.delete()
   }
 });
