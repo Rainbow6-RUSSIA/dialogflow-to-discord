@@ -26,10 +26,13 @@ bot.on('ready', async () => {
 });
 
 bot.on('message', async (message) => {
-  if (!(message.channel.id === process.env.CHANNEL_ID
-    && !message.author.bot
-    && message.content
-    && Date.now() - lastResponce.valueOf() > process.env.TIMEOUT )) return;
+  if (
+    !(message.channel.id === process.env.CHANNEL_ID
+      && !message.author.bot
+      && message.content
+      && Date.now() - lastResponce.valueOf() > process.env.TIMEOUT)
+    || ['$', '!'].some(prefix => message.content.startsWith(prefix))
+  ) return;
   
   const text = message.content.replace(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)|<.+>|~|_|\||\*|>|`/, '')
 
