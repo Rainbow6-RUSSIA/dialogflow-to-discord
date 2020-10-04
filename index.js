@@ -1,54 +1,49 @@
-// Instantiate a DialogFlow client.
-const dialogflow = require('dialogflow');
-
-const dialogflowClient = new dialogflow.SessionsClient();
-
-// Define session path
-const sessionPath = dialogflowClient.sessionPath(process.env.PROJECT_ID, 'discordbot');
+require('dotenv').config()
 
 const Discord = require('discord.js');
+const Dialogflow = require('@google-cloud/dialogflow');
 
-const discordClient = new Discord.Client();
+const bot = new Discord.Client();
+bot.login(process.env.DISCORD_TOKEN);
 
-discordClient.on('ready', () => {
-  console.log('Ready!');
+const dialogflowClient = new Dialogflow.SessionsClient({
+  credentials: {
+    client_email: process.env.CLIENT_EMAIL,
+    private_key: process.env.PRIVATE_KEY,
+  },
+  projectId: process.env.PROJECT_ID
+});
+const sessionPath = dialogflowClient.projectAgentSessionPath(process.env.PROJECT_ID, 'discordbot');
+
+let lastResponce = new Date('2000');
+
+bot.on('ready', async () => {
+  const channel = bot.channels.cache.get(process.env.CHANNEL_ID)
+  console.log(`Logged as ${bot.user.tag}, listening #${channel.name} @ ${channel.guild.name}`);
 });
 
-discordClient.on('message', m => {
-  if (!shouldBeInvoked(m)) {
-    return;
-  }
-
-  const message = remove(discordClient.user.username, m.cleanContent);
-
-  if (message === 'help') {
-    return m.channel.send(process.env.DISCORD_HELP_MESSAGE);
-  }
+bot.on('message', async (message) => {
+  if (!(message.channel.id === process.env.CHANNEL_ID && !message.author.bot && message.content && Date.now() - lastResponce.valueOf() > process.env.TIMEOUT)) return;
 
   const dialogflowRequest = {
     session: sessionPath,
     queryInput: {
       text: {
-        text: message,
-        languageCode: 'en-US'
+        text: message.cleanContent,
+        languageCode: 'ru-RU'
       }
     }
   };
 
-  dialogflowClient.detectIntent(dialogflowRequest).then(responses => {
-    m.channel.send(responses[0].queryResult.fulfillmentText);
-  });
+  const res = await dialogflowClient.detectIntent(dialogflowRequest)
+
+  const text = res[0]?.queryResult?.fulfillmentText
+  
+  if (text) {
+    lastResponce = new Date();
+    console.log(`[${message.author.tag}] ${message.cleanContent}`)
+    message.reply('\n' + text)
+    message.delete()
+  }
 });
 
-function shouldBeInvoked(message) {
-  return (message.content.startsWith(process.env.DISCORD_PREFIX) ||
-          message.content.startsWith('@' + discordClient.user.username) ||
-          message.channel.type === 'dm') &&
-         discordClient.user.id !== message.author.id;
-}
-
-function remove(username, text) {
-  return text.replace('@' + username + ' ', '').replace(process.env.DISCORD_PREFIX + ' ', '');
-}
-
-discordClient.login(process.env.DISCORD_TOKEN);

@@ -4,18 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "xo"
   },
   "author": "Max Isom <codetheweb@icloud.com> (https://maxisom.me)",
   "license": "ISC",
   "dependencies": {
-    "dialogflow": "^0.7.0",
-    "discord.js": "^11.4.2"
-  },
-  "devDependencies": {
-    "xo": "^0.23.0"
-  },
-  "xo": {
-    "space": "true"
+    "@google-cloud/dialogflow": "^3.3.0",
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0"
   }
 }

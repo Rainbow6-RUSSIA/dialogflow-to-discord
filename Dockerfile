@@ -1,6 +1,6 @@
-FROM node:10
+FROM node:14
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 
@@ -8,6 +8,4 @@ RUN npm install
 
 COPY . .
 
-ENV GOOGLE_APPLICATION_CREDENTIALS=/usr/data/keys.json
-
-CMD ["node", "index.js"]
+CMD ["yarn", "start"]
