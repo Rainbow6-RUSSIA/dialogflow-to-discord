@@ -21,7 +21,7 @@ const lastResponces = new Map();
 bot.on('ready', async () => {
   console.log(`Logged as ${bot.user.tag}`)
   channelWhitelist.map(id => {
-    const channel = bot.channels.cache.get(process.env.CHANNEL_ID)
+    const channel = bot.channels.cache.get(id)
     console.log(`Listening #${channel.name} @${channel.guild.name}`)
   })
 });
