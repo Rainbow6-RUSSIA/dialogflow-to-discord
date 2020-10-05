@@ -47,7 +47,7 @@ bot.on('message', async (message) => {
   const trigger = res[0]?.queryResult?.fulfillmentText
   
   if (trigger) {
-    if (!deleteTriggers.includes(trigger)) {
+    if (!deleteTriggers.includes(trigger) && text.includes(' ')) { //если неудаляющий триггер и сообщение длинное
       lastResponce = new Date();
       console.log(`[${message.author.tag}, '${trigger}'] ${message.cleanContent}`)
       if (Date.now() - (lastResponces.get(trigger)?.valueOf() ?? 0) > process.env.TIMEOUT) {
@@ -55,7 +55,9 @@ bot.on('message', async (message) => {
         message.channel.send(`${process.env[`COMMAND_${trigger.toUpperCase()}`]}\n${message.author}`)
       }
     }
-    message.delete()
+    if (deleteTriggers.includes(trigger) || text.includes(' ')) { //если триггер удаляющий и сообщение длинное
+      message.delete()
+    }
   }
 });
 
