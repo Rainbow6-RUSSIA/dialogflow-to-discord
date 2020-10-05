@@ -15,16 +15,20 @@ const dialogflowClient = new Dialogflow.SessionsClient({
 });
 
 const deleteTriggers = process.env.DELETE_TRIGGERS.split(',')
+const channelWhitelist = process.env.CHANNEL_IDS.split(',')
 const lastResponces = new Map();
 
 bot.on('ready', async () => {
-  const channel = bot.channels.cache.get(process.env.CHANNEL_ID)
-  console.log(`Logged as ${bot.user.tag}, listening #${channel.name} @ ${channel.guild.name}`);
+  console.log(`Logged as ${bot.user.tag}`)
+  channelWhitelist.map(id => {
+    const channel = bot.channels.cache.get(process.env.CHANNEL_ID)
+    console.log(`Listening #${channel.name} @${channel.guild.name}`)
+  })
 });
 
 bot.on('message', async (message) => {
   if (
-    !(message.channel.id === process.env.CHANNEL_ID
+    !(channelWhitelist.includes(message.channel.id)
       && !message.author.bot
       && message.content)
     || ['$', '!'].some(prefix => message.content.startsWith(prefix))
