@@ -36,7 +36,7 @@ bot.on('message', async (message) => {
   
   const text = message.content.replace(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)|<.+>|~|_|\||\*|>|`/, '')
 
-  if (text.length < 4) return;
+  if (text.length < 4 || text.length > 256) return;
 
   const session = dialogflowClient.projectAgentSessionPath(process.env.PROJECT_ID, message.author.id);
   const dialogflowRequest = {
