@@ -14,7 +14,8 @@ const dialogflowClient = new Dialogflow.SessionsClient({
   projectId: process.env.PROJECT_ID
 });
 
-let lastResponce = new Date('2000');
+const deleteTriggers = process.env.DELETE_TRIGGERS.split(',')
+const lastResponces = new Map();
 
 bot.on('ready', async () => {
   const channel = bot.channels.cache.get(process.env.CHANNEL_ID)
@@ -25,8 +26,7 @@ bot.on('message', async (message) => {
   if (
     !(message.channel.id === process.env.CHANNEL_ID
       && !message.author.bot
-      && message.content
-      && Date.now() - lastResponce.valueOf() > process.env.TIMEOUT)
+      && message.content)
     || ['$', '!'].some(prefix => message.content.startsWith(prefix))
   ) return;
   
@@ -38,10 +38,7 @@ bot.on('message', async (message) => {
   const dialogflowRequest = {
     session,
     queryInput: {
-      text: {
-        text,
-        languageCode: 'ru-RU'
-      }
+      text: { text, languageCode: 'ru-RU' }
     }
   };
 
@@ -50,9 +47,14 @@ bot.on('message', async (message) => {
   const trigger = res[0]?.queryResult?.fulfillmentText
   
   if (trigger) {
-    lastResponce = new Date();
-    console.log(`[${message.author.tag}] ${message.cleanContent}`)
-    message.channel.send(`${process.env[`COMMAND_${trigger.toUpperCase()}`]}\n${message.author}`)
+    if (!deleteTriggers.includes(trigger)) {
+      lastResponce = new Date();
+      console.log(`[${message.author.tag}, '${trigger}'] ${message.cleanContent}`)
+      if (Date.now() - (lastResponces.get(trigger)?.valueOf() ?? 0) > process.env.TIMEOUT) {
+        lastResponces.set(trigger, new Date())
+        message.channel.send(`${process.env[`COMMAND_${trigger.toUpperCase()}`]}\n${message.author}`)
+      }
+    }
     message.delete()
   }
 });
