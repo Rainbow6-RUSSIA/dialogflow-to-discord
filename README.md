@@ -1,19 +1,19 @@
 🎙 dialogflow-to-discord
 ========================
 
-Easily add Discord bot integration to your Dialogflow project.
+Enrich Discord chat with Dialogflow powered moderation and autoresponding.
 
 ## Usage
 
-You'll need to set 5 environment variables:
-- `GOOGLE_APPLICATION_CREDENTIALS` should point to the JSON file of your project credentials
-- `PROJECT_ID` should be set to your project ID in Google Cloud
-- `DISCORD_TOKEN` should be set to your bot's token
-- `DISCORD_PREFIX` should be set to the prefix you want your bot to activate with (bot will also work with DMs and @ mentions)
-- `DISCORD_HELP_MESSAGE` is what the bot will reply to the `help` command
+You'll need to set some environment variables:
+- `DISCORD_TOKEN` - your bot's token
+- `CLIENT_EMAIL` - from `projectId-somesymbols.json` credentials file
+- `PRIVATE_KEY` - from the same file
+- `PROJECT_ID` - your project ID in Google Cloud
+- `CHANNEL_ID` - a channel which messages will be whitelisted
+- `TIMEOUT` - time between bot replies per trigger (msec)
+- `COMMAND_[...your trigger here...]` - text of reply to user's message. Dialogflow agent should return a single short string which will be considered as a trigger. You can add these vars as much as required.
+- `DELETE_TRIGGERS` - CSV of triggers that deletes a message without reply
 
-Then, just run `node index.js`.
+Then, just run `yarn start`.
 
-## Docker
-
-Set environment variables and mount a directory containing the Google Cloud `keys.json` file to `/usr/data/` as a volume.
