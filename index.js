@@ -51,9 +51,8 @@ bot.on('message', async (message) => {
   const trigger = res[0]?.queryResult?.fulfillmentText
   
   if (trigger) {
+    console.log(`[${message.author.tag}, '${trigger}'] ${message.cleanContent}`)
     if (!deleteTriggers.includes(trigger) && text.includes(' ')) { //если неудаляющий триггер и сообщение длинное
-      lastResponce = new Date();
-      console.log(`[${message.author.tag}, '${trigger}'] ${message.cleanContent}`)
       if (Date.now() - (lastResponces.get(trigger)?.valueOf() ?? 0) > process.env.TIMEOUT) {
         lastResponces.set(trigger, new Date())
         message.channel.send(`${process.env[`COMMAND_${trigger.toUpperCase()}`]}\n${message.author}`)
